@@ -1,7 +1,18 @@
-require('dotenv').config(); // to load environment variables from .env file
+const envFile =
+  process.env.NODE_ENV === "production"
+    ? ".env.production"
+    : ".env.development";
+
+require("dotenv").config({
+  envFile,
+});
+
+// to load environment variables from .env file
 const express = require("express"); // Import the Express library
 const app = express(); // Create an instance of an Express application
-const morgan = require('morgan');
+const morgan = require("morgan");
+console.log(`Using env file: ${envFile}`);
+
 
 // Define a route for the root URL that sends a response "Hey Buddy"
 // below is the callback function which has two parameter req and res
@@ -31,7 +42,7 @@ app.use(express.json()); // to parse the json data from the request body
 
 // simple request logger middleware - place before routes so requests are logged
 // use morgan for request logging
-app.use(morgan('tiny'));
+app.use(morgan("tiny"));
 
 app.get("/", (req, res) => {
   res.send("Hey Buddy");
@@ -104,18 +115,18 @@ console.log(removed);
 // middleware to handle 404 errors for undefined routes
 // This must come after all route handlers so it only runs when no route matches.
 
-// Express processes middleware and routes in the order 
-// they're registered. Earlier you had a 404 handler registered before the routes, 
+// Express processes middleware and routes in the order
+// they're registered. Earlier you had a 404 handler registered before the routes,
 // so every request hit that middleware and returned 404 immediately. By placing the 404 handler last, real routes like /todos are checked first.
 
 app.use((req, res, next) => {
-  res.status(404).json({ error: 'Route not found', path: req.originalUrl });
+  res.status(404).json({ error: "Route not found", path: req.originalUrl });
 });
 
 // generic error handler (Express recognizes this by 4 args)
 app.use((err, req, res, next) => {
-  console.error('Unhandled error:', err);
-  res.status(500).json({ error: 'Internal Server Error' });
+  console.error("Unhandled error:", err);
+  res.status(500).json({ error: "Internal Server Error" });
 });
 
 console.log(`process ENV ${process.env.NODE_ENV}.`);
@@ -123,8 +134,8 @@ console.log(`process ENV ${process.env.NODE_ENV}.`);
 //  You can set it in your terminal before starting the server,
 //  e.g., export NODE_ENV=production on Unix or set NODE_ENV=production on Windows.
 
-if(app.get('env')==='development'){
-  app.use(morgan('dev')); // detailed logging in development
+if (app.get("env") === "development") {
+  app.use(morgan("dev")); // detailed logging in development
 }
 
 // Start the server and listen on port 3000
