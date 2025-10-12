@@ -25,7 +25,7 @@ const todoArr = [
     status: "done",
   },
 ];
-app.use(express.json()) // to parse the json data from the request body
+app.use(express.json()); // to parse the json data from the request body
 
 app.get("/", (req, res) => {
   res.send("Hey Buddy");
@@ -53,18 +53,47 @@ app.get("/todos/:id", (req, res) => {
 //     console.log(todo)
 //      todoArr.push(todo); // to add the new todo item to the array
 //     res.send(todo)
-   
+
 //     // res.status(201).send("Todo item created successfully"); // send 201 status for created
 
 // })
 
-app.post('/todos',(req,res)=>{
-    const todo = req.body;
-    const newId = todoArr.length > 0 ? todoArr[todoArr.length - 1].id + 1 : 1; // to generate a new id
-    const newTodo = { id: newId, ...todo }; // to create a new todo item with the new id
-    todoArr.push(newTodo);
-    res.status(201).send(newTodo); // send the newly created todo item as response
-})
+app.post("/todos", (req, res) => {
+  const todo = req.body;
+  const newId = todoArr.length > 0 ? todoArr[todoArr.length - 1].id + 1 : 1; // to generate a new id
+  const newTodo = { id: newId, ...todo }; // to create a new todo item with the new id
+  todoArr.push(newTodo);
+  res.status(201).send(newTodo); // send the newly created todo item as response
+});
+
+//put request to update a todo item
+app.put("/todos/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  const index = todoArr.findIndex((item) => item.id === id); // to find the index of the todo item with the given id
+  if (index === -1) {
+    return res.status(404).send("Todo not found");
+  }
+  const updatedTodo = { id: id, ...req.body }; // to create an updated todo item with the same id
+  todoArr[index] = updatedTodo; // to update the todo item in the array
+  res.send(updatedTodo); // send the updated todo item as response
+});
+
+//delete request to delete a todo item
+app.delete("/todos/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  const index = todoArr.findIndex((item) => item.id === id); // to find the index of the todo item with the given id
+  if (index === -1) {
+    return res.status(404).send("Todo not found");
+  }
+  todoArr.splice(index, 1); // to delete the todo item from the array
+  res.send("Todo item deleted successfully"); // send a success message as response
+});
+
+// eg for splice code
+
+const arr = [10, 20, 30, 40];
+const removed = arr.splice(1, 1); // removed = [20]; arr => [10, 30, 40]
+console.log(removed);
 
 
 // Start the server and listen on port 3000
