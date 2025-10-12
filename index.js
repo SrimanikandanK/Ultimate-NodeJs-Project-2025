@@ -1,3 +1,4 @@
+require('dotenv').config(); // to load environment variables from .env file
 const express = require("express"); // Import the Express library
 const app = express(); // Create an instance of an Express application
 const morgan = require('morgan');
@@ -117,7 +118,14 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal Server Error' });
 });
 
+console.log(`process ENV ${process.env.NODE_ENV}.`);
+//If NODE_ENV is not set, it will be undefined.
+//  You can set it in your terminal before starting the server,
+//  e.g., export NODE_ENV=production on Unix or set NODE_ENV=production on Windows.
 
+if(app.get('env')==='development'){
+  app.use(morgan('dev')); // detailed logging in development
+}
 
 // Start the server and listen on port 3000
 const PORT = process.env.PORT || 3000;
